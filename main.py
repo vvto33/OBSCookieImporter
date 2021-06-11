@@ -94,6 +94,7 @@ if __name__ == "__main__":
     host_key = args.host
 
     source_conn = sqlite3.connect(source)
+    source_conn.text_factory = bytes
     source_cur = source_conn.cursor()
 
     dest_conn = sqlite3.connect(dest)
@@ -103,6 +104,9 @@ if __name__ == "__main__":
     cookies = source_cur.fetchall()
 
     for c in cookies:
+        c = list(c)
+        for n in range(1,5):
+            c[n] = c[n].decode()
         decrypted = chrome_decrypt(c[12])
         encrypted = dpapi_encrypt(decrypted)
         dest_cur.execute('replace into cookies values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)', (
